@@ -3,163 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MassBalance Pro</title>
+    <title>MassBalance Pro AI</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #0b0b0b; color: #fff; font-family: 'Inter', sans-serif; overflow-x: hidden; }
-        .card { background: #161616; border: 1px solid #222; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .accent { color: #d4ff00; }
-        .btn-main { background-color: #d4ff00; color: #000; font-weight: 900; transition: all 0.2s; }
-        .btn-main:active { transform: scale(0.98); opacity: 0.9; }
-        .input-style { background: #000; border: 1px solid #333; padding: 18px; border-radius: 16px; width: 100%; outline: none; font-size: 16px; }
-        .input-style:focus { border-color: #d4ff00; }
-        .unit-btn { background: #222; padding: 12px; border-radius: 12px; flex: 1; text-align: center; font-size: 12px; font-weight: bold; cursor: pointer; border: 2px solid transparent; transition: 0.3s; color: #666; }
-        .unit-active { border-color: #d4ff00; color: #d4ff00; background: #1a1a1a; }
-        .macro-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); }
+        body { background-color: #0b0b0b; color: #fff; font-family: 'Inter', sans-serif; }
+        .step { display: none; }
+        .step-active { display: block; animation: fadeIn 0.5s; }
+        .card { background: #161616; border: 1px solid #222; border-radius: 24px; }
+        .input-style { background: #000; border: 1px solid #333; padding: 15px; border-radius: 15px; width: 100%; outline: none; margin-top: 8px; }
+        .btn-next { background: #d4ff00; color: #000; font-weight: 900; padding: 18px; border-radius: 18px; width: 100%; margin-top: 20px; text-transform: uppercase; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="p-4 pb-10">
-    <div class="max-w-md mx-auto">
-        <div class="flex justify-between items-center mb-8">
-            <h1 class="text-2xl font-black italic tracking-tighter">MASS<span class="accent">BALANCE</span> PRO</h1>
-            <div id="user-name" class="text-[10px] font-bold bg-white/5 border border-white/10 px-4 py-2 rounded-full uppercase tracking-widest text-gray-400">Atlet</div>
-        </div>
-
-        <div class="card p-8 mb-6 text-center border-t-4 border-t-[#d4ff00]">
-            <p class="text-gray-500 text-[10px] uppercase tracking-[0.2em] font-black mb-2">Jami Energiya</p>
-            <div class="text-6xl font-black mb-6 italic tracking-tight"><span id="total-cal">0</span> <span class="text-sm font-bold text-gray-700 not-italic uppercase">kcal</span></div>
-            
-            <div class="grid grid-cols-3 gap-3">
-                <div class="macro-card p-3 rounded-2xl">
-                    <div class="text-blue-400 text-lg font-black" id="p-val">0g</div>
-                    <div class="text-[9px] text-gray-600 uppercase font-black">Oqsil</div>
-                </div>
-                <div class="macro-card p-3 rounded-2xl">
-                    <div class="text-yellow-400 text-lg font-black" id="f-val">0g</div>
-                    <div class="text-[9px] text-gray-600 uppercase font-black">Yog'</div>
-                </div>
-                <div class="macro-card p-3 rounded-2xl">
-                    <div class="text-green-400 text-lg font-black" id="c-val">0g</div>
-                    <div class="text-[9px] text-gray-600 uppercase font-black">Uglevod</div>
-                </div>
+<body class="p-4">
+    <div id="setup-form" class="max-w-md mx-auto">
+        <div id="step1" class="step step-active">
+            <h2 class="text-3xl font-black italic accent mb-2">SALOM! 🔥</h2>
+            <p class="text-gray-400 mb-8 uppercase text-xs tracking-widest font-bold">Profil yaratishni boshlaymiz</p>
+            <div class="card p-6">
+                <label class="text-[10px] text-gray-500 font-bold uppercase">Ismingiz</label>
+                <input id="u-name" type="text" placeholder="Asadbek" class="input-style mb-4">
+                <label class="text-[10px] text-gray-500 font-bold uppercase">Yoshingiz</label>
+                <input id="u-age" type="number" placeholder="23" class="input-style">
+                <button onclick="nextStep(2)" class="btn-next">Davom etish</button>
             </div>
         </div>
 
-        <div class="card p-6 space-y-6">
-            <div>
-                <label class="text-[10px] text-gray-500 font-black uppercase ml-1 tracking-widest">Mahsulot yoki Taom</label>
-                <input id="food-name" type="text" placeholder="Masalan: Somsa, Tuxum, Lavash..." class="input-style mt-2">
+        <div id="step2" class="step">
+            <h2 class="text-2xl font-black mb-6 italic uppercase">Parametrlar</h2>
+            <div class="card p-6">
+                <label class="text-[10px] text-gray-500 font-bold uppercase">Bo'yingiz (sm)</label>
+                <input id="u-height" type="number" placeholder="180" class="input-style mb-4">
+                <label class="text-[10px] text-gray-500 font-bold uppercase">Hozirgi vazningiz (kg)</label>
+                <input id="u-weight" type="number" placeholder="85" class="input-style">
+                <button onclick="nextStep(3)" class="btn-next">Davom etish</button>
             </div>
+        </div>
 
-            <div class="flex gap-3">
-                <div id="unit-gr" onclick="setUnit('gr')" class="unit-btn unit-active">GRAMM</div>
-                <div id="unit-pc" onclick="setUnit('pc')" class="unit-btn">DONA / PORTSIYA</div>
+        <div id="step3" class="step">
+            <h2 class="text-2xl font-black mb-6 italic uppercase">Asosiy maqsad nima?</h2>
+            <div class="grid grid-cols-1 gap-4">
+                <div onclick="setGoal('lose')" id="g-lose" class="card p-6 border-2 border-transparent cursor-pointer">
+                    <h3 class="font-black text-[#d4ff00]">OZISH (SUSHKA)</h3>
+                    <p class="text-xs text-gray-500">Yog'ni yo'qotish va mushakni saqlash</p>
+                </div>
+                <div onclick="setGoal('gain')" id="g-gain" class="card p-6 border-2 border-transparent cursor-pointer">
+                    <h3 class="font-black text-blue-400">SEMIRISH (MASSA)</h3>
+                    <p class="text-xs text-gray-500">Mushak massasini oshirish</p>
+                </div>
+                <button onclick="nextStep(4)" class="btn-next">Davom etish</button>
             </div>
+        </div>
 
-            <div>
-                <label id="weight-label" class="text-[10px] text-gray-500 font-black uppercase ml-1 tracking-widest">Miqdori (gr)</label>
-                <input id="food-weight" type="number" placeholder="100" class="input-style mt-2">
+        <div id="step4" class="step text-center">
+            <div id="loader" class="py-10">
+                <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-[#d4ff00] mx-auto mb-4"></div>
+                <p class="text-sm font-bold animate-pulse">AI PLAN TUZILMOQDA...</p>
             </div>
-
-            <button onclick="calculate()" class="w-full btn-main p-5 rounded-2xl uppercase font-black italic tracking-widest shadow-lg shadow-d4ff00/20">Hisoblash</button>
+            <div id="plan-result" class="hidden">
+                <h2 class="text-2xl font-black accent italic mb-4">SIZNING PLANINGIZ TAYYOR!</h2>
+                <div class="card p-6 mb-4 text-left">
+                    <p class="text-gray-400 text-[10px] uppercase font-bold">Kunlik kaloriya normangiz:</p>
+                    <div class="text-4xl font-black mb-4 italic" id="final-kcal">0 kcal</div>
+                    <hr class="border-gray-800 mb-4">
+                    <p class="text-sm text-gray-300" id="ai-advice"></p>
+                </div>
+                <button onclick="saveAndStart()" class="btn-next">Ilovani boshlash</button>
             </div>
-
-        <p class="text-center text-[10px] text-gray-600 mt-8 uppercase tracking-widest">Powered by GYMMODE AI</p>
+        </div>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
-        tg.expand();
-        let currentUnit = 'gr';
+        let userData = { goal: 'lose' };
 
-        // MASSIV BAZA: 100g uchun (kkal, oqsil, yog', uglevod) + 1 dona/portsiya o'rtacha vazni
-        const foodDatabase = {
-            // Non va don mahsulotlari
-            "non": { k: 260, p: 8, f: 1, c: 50, dw: 30 },
-            "patir": { k: 310, p: 7, f: 8, c: 52, dw: 50 },
-            "lavash": { k: 280, p: 9, f: 4, c: 50, dw: 200 },
-            
-            // Taomlar
-            "osh": { k: 210, p: 6, f: 12, c: 20, dw: 350 },
-            "somsa": { k: 280, p: 10, f: 15, c: 25, dw: 120 },
-            "manti": { k: 180, p: 8, f: 9, c: 18, dw: 60 },
-            "sho'rva": { k: 60, p: 4, f: 3, c: 5, dw: 300 },
-            "shashlik": { k: 230, p: 18, f: 16, c: 2, dw: 100 },
-            "qozon kabob": { k: 270, p: 15, f: 20, c: 10, dw: 300 },
-            
-            // Proteinlar
-            "tuxum": { k: 155, p: 13, f: 11, c: 1.1, dw: 55 },
-            "toxum": { k: 155, p: 13, f: 11, c: 1.1, dw: 55 },
-            "tovuq": { k: 165, p: 31, f: 3.6, c: 0, dw: 150 },
-            "mol go'shti": { k: 250, p: 26, f: 15, c: 0, dw: 150 },
-            "baliq": { k: 120, p: 20, f: 4, c: 0, dw: 150 },
-            "tvorog": { k: 100, p: 18, f: 5, c: 3, dw: 200 },
-            
-            // Sut va sut mahsulotlari
-            "sut": { k: 64, p: 3.2, f: 3.6, c: 4.8, dw: 200 },
-            "qatiq": { k: 50, p: 3, f: 2.5, c: 4, dw: 200 },
-            "sir": { k: 350, p: 25, f: 27, c: 1.3, dw: 20 },
-            "pishloq": { k: 350, p: 25, f: 27, c: 1.3, dw: 20 },
-            
-            // Mevalar va Sabzavotlar
-            "banan": { k: 89, p: 1.1, f: 0.3, c: 23, dw: 120 },
-            "olma": { k: 52, p: 0.3, f: 0.2, c: 14, dw: 150 },
-            "bodring": { k: 15, p: 0.8, f: 0.1, c: 3, dw: 100 },
-            "pomidor": { k: 18, p: 0.9, f: 0.2, c: 3.9, dw: 100 },
-            "kartoshka": { k: 77, p: 2, f: 0.4, c: 17, dw: 120 },
-            "guruch": { k: 130, p: 2.7, f: 0.3, c: 28, dw: 200 },
-            "grechka": { k: 110, p: 4, f: 1, c: 21, dw: 200 },
-            
-            // Fast food va shirinliklar
-            "burger": { k: 250, p: 12, f: 10, c: 28, dw: 200 },
-            "pits": { k: 260, p: 11, f: 10, c: 30, dw: 150 },
-            "shokolad": { k: 540, p: 6, f: 30, c: 55, dw: 100 },
-            "asal": { k: 304, p: 0.3, f: 0, c: 82, dw: 20 }
-        };
-
-        function setUnit(unit) {
-            currentUnit = unit;
-            document.getElementById('unit-gr').classList.toggle('unit-active', unit === 'gr');
-            document.getElementById('unit-pc').classList.toggle('unit-active', unit === 'pc');
-            document.getElementById('weight-label').innerText = unit === 'gr' ? "Miqdori (gr)" : "Miqdori (dona/port)";
+        function nextStep(s) {
+            document.querySelectorAll('.step').forEach(el => el.classList.remove('step-active'));
+            document.getElementById('step' + s).classList.add('step-active');
+            if(s === 4) generatePlan();
+            tg.HapticFeedback.impactOccurred('medium');
         }
 
-        function calculate() {
-            let name = document.getElementById('food-name').value.toLowerCase().trim();
-            let amount = parseFloat(document.getElementById('food-weight').value);
+        function setGoal(g) {
+            userData.goal = g;
+            document.getElementById('g-lose').style.borderColor = g === 'lose' ? '#d4ff00' : 'transparent';
+            document.getElementById('g-gain').style.borderColor = g === 'gain' ? '#d4ff00' : 'transparent';
+        }
 
-            if (!name || isNaN(amount)) {
-                tg.showAlert("Ma'lumotlarni kiriting!");
-                return;
-            }
+        function generatePlan() {
+            setTimeout(() => {
+                const age = document.getElementById('u-age').value;
+                const h = document.getElementById('u-height').value;
+                const w = document.getElementById('u-weight').value;
+                
+                // Harris-Benedict formula (soddalashtirilgan)
+                let bmr = 10 * w + 6.25 * h - 5 * age + 5;
+                let finalKcal = userData.goal === 'lose' ? bmr * 1.2 - 300 : bmr * 1.2 + 400;
 
-            let found = false;
-            for (let key in foodDatabase) {
-                if (name.includes(key)) {
-                    let food = foodDatabase[key];
-                    let totalWeight = (currentUnit === 'pc') ? (amount * food.dw) : amount;
-                    let ratio = totalWeight / 100;
+                document.getElementById('loader').classList.add('hidden');
+                document.getElementById('plan-result').classList.remove('hidden');
+                document.getElementById('final-kcal').innerText = Math.round(finalKcal) + " kcal";
+                
+                let advice = userData.goal === 'lose' ? 
+                    "Sizga haftasiga 3 marta kardio va yuqori proteinli dieta tavsiya etiladi. Kuniga kamida 2.5 litr suv iching." :
+                    "Sizga og'ir vaznli mashqlar va ko'p uglevodli ratsion tavsiya etiladi. Dam olishga e'tibor bering.";
+                document.getElementById('ai-advice').innerText = advice;
+            }, 2000);
+        }
 
-                    document.getElementById('total-cal').innerText = Math.round(food.k * ratio);
-                    document.getElementById('p-val').innerText = Math.round(food.p * ratio) + 'g';
-                    document.getElementById('f-val').innerText = Math.round(food.f * ratio) + 'g';
-                    document.getElementById('c-val').innerText = Math.round(food.c * ratio) + 'g';
-                    
-                    found = true;
-                    tg.HapticFeedback.
-                        notificationOccurred('success');
-                    break;
-                }
-            }
-
-            if (!found) {
-                tg.showPopup({
-                    title: 'Mahsulot topilmadi',
-                    message: 'Kechirasiz, bazada bu mahsulot yo\'q. Iltimos, boshqa nom bilan kiring.',
-                    buttons: [{type: 'ok'}]
-                });
-            }
+        function saveAndStart() {
+            tg.showAlert("Tabriklaymiz! Reja saqlandi. Endi ovqatlaringizni kiritib borishingiz mumkin.");
+            // Bu yerda biz boyagi kalkulyator sahifasiga o'tkazamiz
+            location.reload(); 
         }
     </script>
 </body>
