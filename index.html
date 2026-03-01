@@ -7,93 +7,94 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #0b0b0b; color: #fff; font-family: 'Inter', sans-serif; overflow-x: hidden; }
-        .card { background: linear-gradient(145deg, #161616, #0f0f0f); border: 1px solid #222; border-radius: 24px; }
-        .accent-text { color: #d4ff00; }
-        .btn-active { background-color: #d4ff00; color: #000; font-weight: 900; box-shadow: 0 10px 20px rgba(212, 255, 0, 0.15); }
+        body { background-color: #0b0b0b; color: #fff; font-family: 'Inter', sans-serif; }
+        .card { background: #161616; border: 1px solid #222; border-radius: 24px; }
+        .accent { color: #d4ff00; }
+        .btn-main { background-color: #d4ff00; color: #000; font-weight: 900; }
+        .input-style { background: #000; border: 1px solid #333; padding: 16px; border-radius: 12px; width: 100%; outline: none; }
+        .unit-btn { background: #222; padding: 10px; border-radius: 10px; flex: 1; text-align: center; font-size: 12px; cursor: pointer; border: 1px solid transparent; }
+        .unit-active { border-color: #d4ff00; color: #d4ff00; background: #1a1a1a; }
     </style>
 </head>
 <body class="p-4">
     <div class="max-w-md mx-auto">
         <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-black italic tracking-tighter">MASS<span class="accent-text">BALANCE</span> PRO</h1>
-            <div id="user-name" class="text-[10px] bg-white/5 border border-white/10 px-3 py-1 rounded-full text-gray-400">ATLET</div>
+            <h1 class="text-2xl font-black italic">MASS<span class="accent">BALANCE</span></h1>
+            <div id="user-name" class="text-[10px] uppercase bg-white/5 px-3 py-1 rounded-full">Atlet</div>
         </div>
 
-        <div class="card p-6 mb-6">
-            <p class="text-gray-500 text-[10px] font-bold uppercase tracking-widest mb-1">Natija</p>
-            <div class="text-5xl font-black mb-6 italic"><span id="total-cal">0</span> <span class="text-sm font-bold text-gray-700 not-italic">KCAL</span></div>
-            
-            <div class="grid grid-cols-3 gap-3">
-                <div class="bg-white/5 p-3 rounded-2xl text-center border border-white/5">
-                    <div class="text-blue-400 text-lg font-black" id="p-val">0g</div>
-                    <div class="text-[9px] text-gray-500 uppercase font-bold">Oqsil</div>
-                </div>
-                <div class="bg-white/5 p-3 rounded-2xl text-center border border-white/5">
-                    <div class="text-yellow-400 text-lg font-black" id="f-val">0g</div>
-                    <div class="text-[9px] text-gray-500 uppercase font-bold">Yog'</div>
-                </div>
-                <div class="bg-white/5 p-3 rounded-2xl text-center border border-white/5">
-                    <div class="text-green-400 text-lg font-black" id="c-val">0g</div>
-                    <div class="text-[9px] text-gray-500 uppercase font-bold">Uglevod</div>
-                </div>
-            </div>
+        <div class="card p-6 mb-6 text-center">
+            <div class="text-5xl font-black mb-2 accent" id="total-cal">0</div>
+            <p class="text-gray-500 text-[10px] uppercase tracking-widest font-bold">Kkal hisoblandi</p>
         </div>
 
-        <div class="card p-5 space-y-4 border-t-2 border-t-[#d4ff00]">
+        <div class="card p-5 space-y-4">
             <div>
-                <label class="text-[10px] text-gray-500 font-bold uppercase ml-1">Mahsulot nomi (masalan: tuxum)</label>
-                <input id="food-name" type="text" placeholder="Nima yedingiz?" class="w-full bg-black/50 border border-white/10 p-4 rounded-xl mt-1 outline-none focus:border-[#d4ff00]">
+                <label class="text-[10px] text-gray-500 font-bold uppercase ml-1">Mahsulot nomi</label>
+                <input id="food-name" type="text" placeholder="Masalan: tuxum" class="input-style mt-1">
             </div>
+
+            <div class="flex gap-2 mb-2">
+                <div id="unit-gr" onclick="setUnit('gr')" class="unit-btn unit-active">GRAMM</div>
+                <div id="unit-pc" onclick="setUnit('pc')" class="unit-btn">DONA (SONI)</div>
+            </div>
+
             <div>
-                <label class="text-[10px] text-gray-500 font-bold uppercase ml-1">Vazni (grammda)</label>
-                <input id="food-weight" type="number" placeholder="100" class="w-full bg-black/50 border border-white/10 p-4 rounded-xl mt-1 outline-none focus:border-[#d4ff00]">
+                <label id="weight-label" class="text-[10px] text-gray-500 font-bold uppercase ml-1">Miqdori (Grammda)</label>
+                <input id="food-weight" type="number" placeholder="100" class="input-style mt-1">
             </div>
-            <button onclick="calculate()" class="w-full btn-active p-4 rounded-2xl transition-all uppercase tracking-tighter italic">Hisoblash</button>
+
+            <button onclick="calculate()" class="w-full btn-main p-4 rounded-xl uppercase italic">Hisoblash</button>
         </div>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
+        let currentUnit = 'gr'; // default
 
+        // Baza: kkal, p, f, c (100g uchun) + o'rtacha 1 dona vazni (gr)
         const db = {
-            "tuxum": { k: 155, p: 13, f: 11, c: 1.1 },
-            "toxum": { k: 155, p: 13, f: 11, c: 1.1 }, // Imlo xatosi uchun
-            "tovuq": { k: 165, p: 31, f: 3.6, c: 0 },
-            "sir": { k: 350, p: 25, f: 27, c: 1.3 },
-            "osh": { k: 210, p: 6, f: 12, c: 20 },
-            "guruch": { k: 130, p: 2.7, f: 0.3, c: 28 },
-            "non": { k: 260, p: 8, f: 1, c: 50 }
+            "tuxum": { k: 155, p: 13, f: 11, c: 1.1, pieceWeight: 55 },
+            "toxum": { k: 155, p: 13, f: 11, c: 1.1, pieceWeight: 55 },
+            "banan": { k: 89, p: 1.1, f: 0.3, c: 23, pieceWeight: 120 },
+            "olma": { k: 52, p: 0.3, f: 0.2, c: 14, pieceWeight: 150 },
+            "non": { k: 260, p: 8, f: 1, c: 50, pieceWeight: 30 }, // 1 bo'lak o'rtacha
+            "tovuq": { k: 165, p: 31, f: 3.6, c: 0, pieceWeight: 200 }, // 1 dona file
+            "sir": { k: 350, p: 25, f: 27, c: 1.3, pieceWeight: 20 },
+            "osh": { k: 210, p: 6, f: 12, c: 20, pieceWeight: 300 } // 1 porsiya
         };
+
+        function setUnit(unit) {
+            currentUnit = unit;
+            document.getElementById('unit-gr').classList.toggle('unit-active', unit === 'gr');
+            document.getElementById('unit-pc').classList.toggle('unit-active', unit === 'pc');
+            document.getElementById('weight-label').innerText = unit === 'gr' ? "Miqdori (Grammda)" : "Miqdori (Donada)";
+        }
 
         function calculate() {
             let name = document.getElementById('food-name').value.toLowerCase().trim();
-            let weight = parseFloat(document.getElementById('food-weight').value);
+            let amount = parseFloat(document.getElementById('food-weight').value);
 
-            if (!name || isNaN(weight)) {
-                tg.
-                    showAlert("Iltimos, mahsulot va vaznini to'g'ri kiriting!");
+            if (!name || isNaN(amount)) {
+                tg.showAlert("Ma'lumotlarni to'liq kiriting!");
                 return;
             }
 
             let found = false;
             for (let key in db) {
                 if (name.includes(key)) {
-                    let r = weight / 100;
-                    document.getElementById('total-cal').innerText = Math.round(db[key].k * r);
-                    document.getElementById('p-val').innerText = Math.round(db[key].p * r) + 'g';
-                    document.getElementById('f-val').innerText = Math.round(db[key].f * r) + 'g';
-                    document.getElementById('c-val').innerText = Math.round(db[key].c * r) + 'g';
+                    let totalWeight = (currentUnit === 'pc') ? (amount * db[key].pieceWeight) : amount;
+                    let ratio = totalWeight / 100;
+
+                    document.getElementById('total-cal').innerText = Math.round(db[key].k * ratio);
                     found = true;
                     tg.HapticFeedback.notificationOccurred('success');
                     break;
                 }
             }
 
-            if (!found) {
-                tg.showAlert("Bazada '" + name + "' topilmadi. Hozircha: tuxum, tovuq, osh, sir, non.");
-            }
+            if (!found) tg.showAlert("Mahsulot topilmadi!");
         }
     </script>
 </body>
