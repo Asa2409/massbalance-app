@@ -2,142 +2,121 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MassBalance Pro Fix</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MassBalance Pro Fix Final</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background-color: #080808; color: #fff; font-family: 'Inter', sans-serif; }
+        body { background-color: #080808; color: #fff; font-family: sans-serif; -webkit-tap-highlight-color: transparent; }
         .glass { background: #111; border: 1px solid #222; border-radius: 20px; }
         .accent { color: #d4ff00; }
-        .bg-accent { background: #d4ff00; color: #000; }
-        input, select { background: #1a1a1a; border: 1px solid #333; padding: 16px; border-radius: 16px; width: 100%; color: #fff; outline: none; font-size: 16px; }
-        input:focus { border-color: #d4ff00; }
+        input, select { background: #1a1a1a; border: 1px solid #333; padding: 16px; border-radius: 12px; width: 100%; color: #fff; outline: none; font-size: 16px; margin-bottom: 10px; }
+        .btn-next { background: #d4ff00; color: #000; width: 100%; padding: 18px; border-radius: 15px; font-weight: 900; text-transform: uppercase; cursor: pointer; border: none; }
         .hidden { display: none; }
-        .btn-main { width: 100%; padding: 18px; border-radius: 18px; font-weight: 900; text-transform: uppercase; font-style: italic; transition: 0.3s; }
     </style>
 </head>
-<body class="p-5">
+<body class="p-4">
 
-    <div id="onboarding" class="max-w-md mx-auto pt-10">
-        <h1 class="text-3xl font-black italic accent mb-8 uppercase text-center">Profil Sozlash</h1>
+    <div id="setup-container">
+        <h1 class="text-2xl font-black accent italic text-center mb-6 mt-4">PROFIL SOZLASH</h1>
         
-        <div class="glass p-6 space-y-6">
-            <div id="step1">
-                <p class="text-[10px] text-gray-500 font-bold uppercase mb-4 tracking-widest text-center">1-QADAM: SHAXSIY MA'LUMOTLAR</p>
-                <div class="space-y-4">
-                    <input id="reg-name" type="text" placeholder="Ismingiz">
-                    <input id="reg-age" type="number" placeholder="Yoshingiz">
-                </div>
-                <button onclick="goTo(2)" class="btn-main bg-accent mt-6">Keyingisi <i class="fa-solid fa-chevron-right ml-2"></i></button>
+        <div class="glass p-6">
+            <div id="div-step1">
+                <label class="text-[10px] text-gray-500 font-bold uppercase mb-2 block">1-QADAM: Ism va Yosh</label>
+                <input id="in-name" type="text" placeholder="Ismingiz">
+                <input id="in-age" type="number" placeholder="Yoshingiz">
+                <button onclick="moveStep(2)" class="btn-next">Keyingisi</button>
             </div>
 
-            <div id="step2" class="hidden">
-                <p class="text-[10px] text-gray-500 font-bold uppercase mb-4 tracking-widest text-center">2-QADAM: JISMONIY HOLAT</p>
-                <div class="space-y-4">
-                    <input id="reg-weight" type="number" placeholder="Vazn (kg)">
-                    <input id="reg-height" type="number" placeholder="Bo'y (sm)">
-                </div>
-                <div class="flex gap-2 mt-6">
-                    <button onclick="goTo(1)" class="w-1/3 p-4 glass font-bold text-gray-400"><i class="fa-solid fa-arrow-left"></i></button>
-                    <button onclick="goTo(3)" class="btn-main bg-accent">Keyingisi</button>
+            <div id="div-step2" class="hidden">
+                <label class="text-[10px] text-gray-500 font-bold uppercase mb-2 block">2-QADAM: Vazn va Bo'y</label>
+                <input id="in-weight" type="number" placeholder="Vazn (kg)">
+                <input id="in-height" type="number" placeholder="Bo'y (sm)">
+                <div class="flex gap-2">
+                    <button onclick="moveStep(1)" class="w-1/4 p-4 glass text-gray-400">⬅️</button>
+                    <button onclick="moveStep(3)" class="btn-next">Keyingisi</button>
                 </div>
             </div>
 
-            <div id="step3" class="hidden">
-                <p class="text-[10px] text-gray-500 font-bold uppercase mb-4 tracking-widest text-center">3-QADAM: MASHG'ULOT VA MAQSAD</p>
-                <div class="space-y-4">
-                    <label class="text-[10px] text-gray-400 font-bold">HAFTADA NECHA MARTA MASHQ?</label>
-                    <select id="reg-act">
-                        <option value="1.2">0 marta (kam harakat)</option>
-                        <option value="1.375">1-3 marta (o'rtacha)</option>
-                        <option value="1.55">4-5 marta (faol)</option>
-                        <option value="1.725">Har kuni (professional)</option>
-                    </select>
-                    <label class="text-[10px] text-gray-400 font-bold">ASOSIY MAQSAD?</label>
-                    <select id="reg-goal">
-                        <option value="lose">Ozish (Sushka)</option>
-                        <option value="gain">Semirish (Massa)</option>
-                    </select>
-                </div>
-                <div class="flex gap-2 mt-6">
-                    <button onclick="goTo(2)" class="w-1/3 p-4 glass font-bold text-gray-400"><i class="fa-solid fa-arrow-left"></i></button>
-                    <button onclick="finishSetup()" class="btn-main bg-accent">REJANI TUZISH</button>
+            <div id="div-step3" class="hidden">
+                <label class="text-[10px] text-gray-500 font-bold uppercase mb-2 block">3-QADAM: Faollik</label>
+                <select id="in-act">
+                    <option value="1.2">0 marta (kam harakat)</option>
+                    <option value="1.375">1-3 marta (o'rtacha)</option>
+                    <option value="1.55">4-6 marta (faol)</option>
+                </select>
+                <div class="flex gap-2">
+                    <button onclick="moveStep(2)" class="w-1/4 p-4 glass text-gray-400">⬅️</button>
+                    <button onclick="completeSetup()" class="btn-next">Tayyor</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="main-app" class="hidden">
-        <div class="flex justify-between items-center mb-6">
-            <h2 id="u-name" class="text-2xl font-black italic accent uppercase">ATLET</h2>
-            <button onclick="localStorage.clear(); location.reload();" class="text-red-500 text-xs font-bold uppercase">Reset</button>
+    <div id="main-app" class="hidden text-center">
+        <h2 id="out-name" class="text-xl font-bold accent italic uppercase"></h2>
+        <div class="glass p-8 mt-6">
+            <p class="text-xs text-gray-500 uppercase font-bold">Kunlik Normangiz</p>
+            <h1 id="out-kcal" class="text-6xl font-black accent">0</h1>
+            <p class="text-xs mt-4">Kcal / kun</p>
         </div>
-        <div class="glass p-6 text-center">
-            <p class="text-xs text-gray-500 font-bold uppercase mb-2">Kunlik Kaloriya Normangiz</p>
-            <h1 id="u-kcal" class="text-6xl font-black accent italic">0</h1>
-            <p class="text-[10px] text-gray-600 mt-2">P: <span id="u-p">0</span>g | F: <span id="u-f">0</span>g | C: <span id="u-c">0</span>g</p>
-        </div>
+        <button onclick="resetApp()" class="mt-10 text-red-500 text-xs font-bold uppercase opacity-50">Ma'lumotlarni o'chirish</button>
     </div>
 
     <script>
-        let tg = window.Telegram.WebApp;
+        const tg = window.Telegram.WebApp;
         tg.expand();
 
-        function goTo(step) {
-            // Hamma bosqichlarni yopish
-            document.getElementById('step1').classList.add('hidden');
-            document.getElementById('step2').classList.add('hidden');
-            document.getElementById('step3').classList.add('hidden');
-            // Keraklisini ochish
-            document.getElementById('step' + step).classList.remove('hidden');
-            tg.HapticFeedback.impactOccurred('medium');
+        function moveStep(step) {
+            console.log("Navigating to step: " + step);
+            // Hamma step divlarini yashirish
+            document.getElementById('div-step1').classList.add('hidden');
+            document.getElementById('div-step2').classList.add('hidden');
+            document.getElementById('div-step3').classList.add('hidden');
+            
+            // Kerakli stepni ko'rsatish
+            document.getElementById('div-step' + step).classList.remove('hidden');
+            
+            // Haptic aloqa
+        if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
         }
 
-        function finishSetup() {
-            const name = document.getElementById('reg-name').value;
-            const w = parseFloat(document.getElementById('reg-weight').value);
-            const h = parseFloat(document.getElementById('reg-height').value);
-            const a = parseFloat(document.getElementById('reg-age').value);
-            const act = parseFloat(document.getElementById('reg-act').value);
-            const goal = document.getElementById('reg-goal').value;
+        function completeSetup() {
+            const n = document.getElementById('in-name').value;
+            const w = document.getElementById('in-weight').value;
+            const a = document.getElementById('in-age').value;
+            const h = document.getElementById('in-height').value;
+            const act = document.getElementById('in-act').value;
 
-            if(!name  !w  !h || !a) {
-                tg.showAlert("Barcha ma'lumotlarni kiriting!");
+            if(!n  !w  !a || !h) {
+                alert("Iltimos, barcha kataklarni to'ldiring!");
                 return;
             }
 
-            // BMR Hisobi
-            let bmr = (10 * w) + (6.25 * h) - (5 * a) + 5;
-            let norm = bmr * act;
-            let target = goal === 'lose' ? norm - 450 : norm + 450;
+            // Mifflin-St Jeor formula
+            let bmr = (10 * parseFloat(w)) + (6.25 * parseFloat(h)) - (5 * parseFloat(a)) + 5;
+            let total = Math.round(bmr * parseFloat(act));
 
-            const userData = {
-                name: name,
-                kcal: Math.round(target),
-                p: Math.round(w * 1.8),
-                f: Math.round(w * 0.8),
-                c: Math.round((target - (w*1.8*4) - (w*0.8*9)) / 4)
-            };
-
-            localStorage.setItem('mb_user_fix', JSON.stringify(userData));
-            renderApp(userData);
+            const data = { name: n, kcal: total };
+            localStorage.setItem('mb_user_v73', JSON.stringify(data));
+            showApp(data);
         }
 
-        function renderApp(data) {
-            document.getElementById('onboarding').classList.add('hidden');
+        function showApp(data) {
+            document.getElementById('setup-container').classList.add('hidden');
             document.getElementById('main-app').classList.remove('hidden');
-            document.getElementById('u-name').innerText = data.name;
-            document.getElementById('u-kcal').innerText = data.kcal;
-            document.getElementById('u-p').innerText = data.p;
-            document.getElementById('u-f').innerText = data.f;
-            document.getElementById('u-c').innerText = data.c;
+            document.getElementById('out-name').innerText = data.name;
+            document.getElementById('out-kcal').innerText = data.kcal;
+        }
+
+        function resetApp() {
+            localStorage.removeItem('mb_user_v73');
+            location.reload();
         }
 
         window.onload = () => {
-            const saved = localStorage.getItem('mb_user_fix');
-            if(saved) renderApp(JSON.parse(saved));
+            const saved = localStorage.getItem('mb_user_v73');
+            if(saved) showApp(JSON.parse(saved));
         };
     </script>
 </body>
