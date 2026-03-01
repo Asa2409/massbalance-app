@@ -3,233 +3,223 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MassBalance Pro Ultimate</title>
+    <title>MassBalance Pro V6</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background-color: #080808; color: #fff; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        .glass { background: rgba(22, 22, 22, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); border-radius: 24px; }
+        body { background-color: #050505; color: #fff; font-family: 'Inter', sans-serif; }
+        .glass { background: #111; border: 1px solid #222; border-radius: 20px; }
         .accent { color: #d4ff00; }
-        .bg-accent { background-color: #d4ff00; color: #000; }
-        .tab-active { color: #d4ff00; position: relative; }
-        .tab-active::after { content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; background: #d4ff00; border-radius: 50%; }
-        input, select { background: #121212; border: 1px solid #222; padding: 14px; border-radius: 16px; width: 100%; outline: none; color: #fff; }
-        input:focus { border-color: #d4ff00; }
-        .unit-btn { background: #1a1a1a; padding: 10px; border-radius: 12px; flex: 1; text-align: center; font-size: 11px; font-weight: 800; cursor: pointer; border: 1px solid transparent; transition: 0.3s; }
-        .unit-active { border-color: #d4ff00; color: #d4ff00; background: rgba(212, 255, 0, 0.05); }
+        .bg-accent { background: #d4ff00; color: #000; }
+        .progress-bg { background: #1a1a1a; height: 6px; border-radius: 10px; overflow: hidden; }
+        .progress-fill { background: #d4ff00; height: 100%; transition: 0.5s; }
+        input { background: #111; border: 1px solid #333; padding: 12px; border-radius: 12px; width: 100%; outline: none; color: #fff; }
+        .tab-btn { flex: 1; text-align: center; padding: 15px; font-size: 10px; font-weight: 900; color: #555; border-bottom: 2px solid transparent; }
+        .tab-active { color: #d4ff00; border-bottom-color: #d4ff00; }
     </style>
 </head>
-<body class="p-4 pb-28">
+<body class="p-4 pb-24">
 
-    <div id="setup" class="max-w-md mx-auto hidden pt-10">
-        <h1 class="text-4xl font-black italic accent mb-2 tracking-tighter">MASS<span class="text-white">BALANCE</span></h1>
-        <p class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-10">Shaxsiy AI Treneringiz</p>
-        <div class="glass p-6 space-y-5">
-            <input id="reg-name" type="text" placeholder="Ismingiz">
-            <div class="flex gap-3">
-                <input id="reg-weight" type="number" placeholder="Vazn (kg)">
-                <input id="reg-height" type="number" placeholder="Bo'y (sm)">
+    <div id="tab-dash" class="space-y-4">
+        <div class="flex justify-between items-center mb-2">
+            <h2 class="text-xl font-black accent italic uppercase">MassBalance Pro</h2>
+            <button onclick="clearDay()" class="text-[10px] text-red-500 font-bold uppercase"><i class="fa-solid fa-trash-can"></i> Kunni tozalash</button>
+        </div>
+
+        <div class="glass p-5 space-y-4">
+            <div class="text-center">
+                <p class="text-[10px] text-gray-500 uppercase font-bold mb-1">Qolgan Kaloriya</p>
+                <h1 class="text-5xl font-black italic accent" id="rem-kcal">0</h1>
             </div>
-            <select id="reg-goal">
-                <option value="lose">Ozish (Sushka)</option>
-                <option value="gain">Semirish (Massa)</option>
-            </select>
-            <button onclick="saveProfile()" class="w-full bg-accent p-5 rounded-2xl font-black italic uppercase tracking-widest">Profil yaratish</button>
+            
+            <div class="grid grid-cols-3 gap-4">
+                <div class="space-y-1">
+                    <p class="text-[8px] text-gray-500 font-bold uppercase">Oqsil (P)</p>
+                    <div class="progress-bg"><div id="p-bar" class="progress-fill" style="width: 0%; background: #60a5fa;"></div></div>
+                    <p class="text-[10px] font-bold"><span id="curr-p">0</span> / <span id="max-p">150</span>g</p>
+                </div>
+                <div class="space-y-1">
+                    <p class="text-[8px] text-gray-500 font-bold uppercase">Yog' (F)</p>
+                    <div class="progress-bg"><div id="f-bar" class="progress-fill" style="width: 0%; background: #fbbf24;"></div></div>
+                    <p class="text-[10px] font-bold"><span id="curr-f">0</span> / <span id="max-f">70</span>g</p>
+                </div>
+                <div class="space-y-1">
+                    <p class="text-[8px] text-gray-500 font-bold uppercase">Uglevod (C)</p>
+                    <div class="progress-bg"><div id="c-bar" class="progress-fill" style="width: 0%; background: #34d399;"></div></div>
+                    <p class="text-[10px] font-bold"><span id="curr-c">0</span> / <span id="max-c">250</span>g</p>
+                </div>
+            </div>
+        </div>
+
+        <h3 class="text-xs font-black uppercase italic tracking-widest mt-6">Bugungi taomlar:</h3>
+        <div id="food-logs" class="space-y-2">
+            </div>
+    </div>
+
+    <div id="tab-add" class="hidden space-y-4">
+        <div class="glass p-5 space-y-4">
+            <h3 class="text-sm font-black accent uppercase">Taom qo'shish</h3>
+            <input id="f-name" type="text" placeholder="Taom nomi (osh, somsa, tuxum...)">
+            <input id="f-weight" type="number" placeholder="Miqdori (grammda)">
+            <button onclick="addToLog()" class="w-full bg-accent p-4 rounded-xl font-black italic uppercase">Ro'yxatga qo'shish +</button>
+        </div>
+        
+        <div class="glass p-5">
+            <p class="text-[10px] text-gray-500 mb-2 uppercase">Mashhur taomlar (100g uchun):</p>
+            <div class="grid grid-cols-2 gap-2 text-[10px]">
+                <div class="bg-white/5 p-2 rounded">Osh: 210 kkal</div>
+                <div class="bg-white/5 p-2 rounded">Somsa: 280 kkal</div>
+                <div class="bg-white/5 p-2 rounded">Tovuq: 165 kkal</div>
+                <div class="bg-white/5 p-2 rounded">Tuxum: 155 kkal</div>
+            </div>
         </div>
     </div>
 
-    <div id="main-app" class="max-w-md mx-auto hidden">
-        <div class="flex justify-between items-center mb-6">
-            <div>
-                <h2 id="u-name-display" class="text-xl font-black accent italic uppercase tracking-tighter">ATLET</h2>
-                <p id="u-status" class="text-[9px] text-gray-500 font-black tracking-widest uppercase"></p>
-            </div>
-            <div class="flex gap-3">
-                <button onclick="resetData()" class="text-gray-700 text-xs"><i class="fa-solid fa-rotate-left"></i></button>
-            </div>
+    <div id="tab-diet" class="hidden space-y-3">
+        <h3 class="text-sm font-black accent uppercase italic">Kengaytirilgan Ratsion (Sushka)</h3>
+        <div class="glass p-4">
+            <p class="accent font-bold text-xs">NONUSHTA (08:00)</p>
+            <p class="text-xs text-gray-400 mt-1">- 3ta qaynatilgan tuxum (oqsil uchun)<br>- 50g suli bo'tqasi (suvda)<br>- Shakarsiz kofe yoki ko'k choy</p>
         </div>
-
-        <div id="tab-dash" class="tab-content space-y-4">
-            <div class="grid grid-cols-2 gap-3">
-                <div class="glass p-5">
-                    <p class="text-[9px] text-gray-500 font-bold uppercase mb-1">Kunlik Norma</p>
-                    <p class="text-2xl font-black accent italic" id="d-kcal">0</p>
-                    <p class="text-[8px] text-gray-600 font-bold">kcal / kun</p>
-                </div>
-                <div class="glass p-5">
-                    <p class="text-[9px] text-gray-500 font-bold uppercase mb-1">Suv Balansi</p>
-                    <div class="flex items-center gap-2">
-                        <p class="text-2xl font-black text-blue-400 italic" id="w-count">0</p>
-                        <button onclick="addWater()" class="text-blue-500 text-sm active:scale-90"><i class="fa-solid fa-circle-plus"></i></button>
-                    </div>
-                    <p class="text-[8px] text-gray-600 font-bold">2.0L Maqsad</p>
-                </div>
-            </div>
-
-            <div class="glass p-6 flex justify-between items-center">
-                <div>
-                    <p class="text-[10px] text-gray-500 font-black uppercase mb-2 tracking-widest">Jismoniy holat</p>
-                    <div class="flex gap-4">
-                        <span class="text-sm font-bold"><span class="text-gray-600">Bo'y:</span> <span id="d-h">0</span>sm</span>
-                        <span class="text-sm font-bold"><span class="text-gray-600">Vazn:</span> <span id="d-w">0</span>kg</span>
-                    </div>
-                </div>
-                <div class="h-10 w-10 bg-accent/10 rounded-full flex items-center justify-center">
-                    <i class="fa-solid fa-weight-scale accent"></i>
-                </div>
-            </div>
-
-            <div class="glass p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-xs font-black uppercase italic tracking-widest">Bugungi Mashg'ulot</h3>
-                    <span class="text-[10px] bg-white/5 px-2 py-1 rounded text-gray-400" id="current-day">Dushanba</span>
-                </div>
-                <div id="workout-desc" class="text-sm text-gray-300 font-medium"></div>
-            </div>
+        <div class="glass p-4">
+            <p class="accent font-bold text-xs">TUSHLIK (13:00)</p>
+            <p class="text-xs text-gray-400 mt-1">- 150g qaynatilgan tovuq filesi<br>- 100g grechka yoki guruch<br>- Bodring va ko'katli salat (yog'siz)</p>
         </div>
-
-        <div id="tab-diet" class="tab-content hidden space-y-3">
-            <h3 class="text-xs font-black uppercase italic accent mb-4">7 Kunlik Ratsion</h3>
-            <div id="diet-list" class="space-y-3"></div>
+        <div class="glass p-4">
+            <p class="accent font-bold text-xs">KECHKI OVQAT (19:00)</p>
+            <p class="text-xs text-gray-400 mt-1">- 200g kam yog'li tvorog yoki baliq<br>- 1 stakan qatiq<br>- Olma yoki meva</p>
         </div>
+    </div>
 
-        <div id="tab-calc" class="tab-content hidden space-y-4">
-            <div class="glass p-5 space-y-4">
-                <input id="f-name" type="text" placeholder="Mahsulot nomi...">
-                <div class="flex gap-2">
-                    <div id="un-gr" onclick="setUn('gr')" class="unit-btn unit-active">GRAMM</div>
-                    <div id="un-pc" onclick="setUn('pc')" class="unit-btn">DONA / PORT</div>
-                </div>
-                <input id="f-val" type="number" placeholder="Miqdori">
-                <button onclick="calcF()" class="w-full bg-accent p-4 rounded-xl font-black italic uppercase">Hisoblash</button>
-            </div>
-            <div id="f-res" class="glass p-6 hidden border-t-2 border-accent">
-                <div class="text-4xl font-black mb-4 italic" id="res-k">0</div>
-                <div class="grid grid-cols-3 gap-2">
-                    <div class="text-center"><p class="text-blue-400 font-bold" id="res-p">0g</p><p class="text-[8px] text-gray-600 font-black">OQSIL</p></div>
-                    <div class="text-center"><p class="text-yellow-400 font-bold" id="res-f">0g</p><p class="text-[8px] text-gray-600 font-black">YOG'</p></div>
-                    <div class="text-center"><p class="text-green-400 font-bold" id="res-c">0g</p><p class="text-[8px] text-gray-600 font-black">UGLEVOD</p></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="fixed bottom-6 left-4 right-4 glass p-4 flex justify-around items-center border border-white/10 shadow-2xl">
-            <button onclick="showT('dash')" id="nav-dash" class="tab-active text-xl"><i class="fa-solid fa-house-chimney"></i></button>
-            <button onclick="showT('diet')" id="nav-diet" class="text-xl text-gray-600"><i class="fa-solid fa-utensils"></i></button>
-            <button onclick="showT('calc')" id="nav-calc" class="text-xl text-gray-600"><i class="fa-solid fa-calculator"></i></button>
-        </div>
+    <div class="fixed bottom-0 left-0 right-0 glass rounded-none border-t border-white/5 flex">
+        <button onclick="showTab('dash')" id="n-dash" class="tab-btn tab-active"><i class="fa-solid fa-chart-pie text-lg block mb-1"></i>HISOBOT</button>
+        <button onclick="showTab('add')" id="n-add" class="tab-btn"><i class="fa-solid fa-plus-circle text-lg block mb-1"></i>QO'SHISH</button>
+        <button onclick="showTab('diet')" id="n-diet" class="tab-btn"><i class="fa-solid fa-leaf text-lg block mb-1"></i>RATSION</button>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
-        let uUnit = 'gr';
-        let water = 0;
-
-        const foodDB = {
-            "tuxum": { k: 155, p: 13, f: 11, c: 1, dw: 55 },
-            "osh": { k: 210, p: 6, f: 12, c: 20, dw: 350 },
-            "tovuq": { k: 165, p: 31, f: 3, c: 0, dw: 150 },
-            "non": { k: 260, p: 8, f: 1, c: 50, dw: 30 },
-            "somsa": { k: 280, p: 10, f: 15, c: 25, dw: 120 },
-            "banan": { k: 89, p: 1, f: 0, c: 23, dw: 120 }
-        };
-        const plans = {
-            lose: {
-                workout: ["Ko'krak + Qo'l", "Kardio (Yugurish)", "Orqa + Elka", "Oyoq + Press", "Kardio", "Yengil yurish", "Dam olish"],
-                diet: ["N: Tuxum. T: Tovuq file. K: Tvorog.", "N: Suli. T: Baliq. K: Qatiq.", "N: Meva. T: Sho'rva. K: Go'sht.", "N: Omlet. T: Grechka. K: Salat.", "N: Tvorog. T: Tovuq. K: Meva.", "N: Tuxum. T: Dimlama. K: Qatiq.", "N: Choy. T: Sho'rva. K: Salat."]
-            },
-            gain: {
-                workout: ["Og'ir Ko'krak + Triceps", "Oyoq (Baza)", "Dam olish", "Orqa + Biceps", "Elka + Press", "Og'ir Oyoq", "Dam olish"],
-                diet: ["N: 3ta tuxum. T: Osh. K: Go'sht + Guruch.", "N: Suli + Asal. T: Pasta. K: Banan + Sut.", "N: Somsa. T: Qozon kabob. K: Non + Sut.", "N: Tuxum. T: Burger. K: Go'shtli ovqat.", "N: Pishloq. T: Manti. K: Palov.", "N: Bo'tqa. T: Shashlik. K: Tvorog.", "N: Somsa. T: Lag'mon. K: Tuxum."]
-            }
+        let logs = JSON.parse(localStorage.getItem('mb_logs') || '[]');
+        
+        // Mahsulotlar bazasi (100g uchun)
+        const db = {
+            "osh": { k: 210, p: 6, f: 12, c: 20 },
+            "tuxum": { k: 155, p: 13, f: 11, c: 1 },
+            "tovuq": { k: 165, p: 31, f: 3, c: 0 },
+            "somsa": { k: 280, p: 10, f: 15, c: 25 },
+            "guruch": { k: 130, p: 2, f: 0, c: 28 },
+            "grechka": { k: 110, p: 4, f: 1, c: 20 },
+            "tvorog": { k: 100, p: 18, f: 2, c: 3 },
+            "non": { k: 250, p: 8, f: 1, c: 45 }
         };
 
-        window.onload = function() {
-            const data = localStorage.getItem('mb_v5_pro');
-            if(data) loadApp(JSON.parse(data));
-            else document.getElementById('setup').classList.remove('hidden');
-        };
+        const target = { kkal: 2500, p: 150, f: 70, c: 250 };
 
-        function saveProfile() {
-            const n = document.getElementById('reg-name').value;
-            const w = document.getElementById('reg-weight').value;
-            const h = document.getElementById('reg-height').value;
-            const g = document.getElementById('reg-goal').value;
-            if(!n || !w) return;
-            const user = { name: n, weight: w, height: h, goal: g, kcal: g === 'lose' ? w * 25 : w * 38 };
-            localStorage.setItem('mb_v5_pro', JSON.stringify(user));
-            loadApp(user);
-        }
-
-        function loadApp(user) {
-            document.getElementById('setup').classList.add('hidden');
-            document.getElementById('main-app').classList.remove('hidden');
-            document.getElementById('u-name-display').innerText = user.name;
-            document.getElementById('u-status').innerText = user.goal === 'lose' ? "Sushka • Hard Mode" : "Massa • Beast Mode";
-            document.getElementById('d-kcal').innerText = Math.round(user.kcal);
-            document.getElementById('d-h').innerText = user.height;
-            document.getElementById('d-w').innerText = user.weight;
-            
-            const days = ["Yakshanba", "Dushanba", "Seshanba", "Chorshanba", "Payshanba", "Juma", "Shanba"];
-            const todayIdx = new Date().getDay();
-            document.getElementById('current-day').innerText = days[todayIdx];
-            document.getElementById('workout-desc').innerText = plans[user.goal].workout[todayIdx === 0 ? 6 : todayIdx-1];
-
-            document.getElementById('diet-list').innerHTML = days.map((d, i) => `
-                <div class="glass p-4 border-l-2 ${i === todayIdx ? 'border-accent' : 'border-transparent'}">
-                    <p class="text-[9px] font-black accent uppercase">${d}</p>
-                    <p class="text-xs text-gray-400 mt-1">${plans[user.goal].diet[i === 0 ? 6 : i-1]}</p>
-                </div>
-            `).join('');
-            water = parseInt(localStorage.getItem('mb_water') || 0);
-            updateWater();
-        }
-
-        function addWater() {
-            water += 250;
-            localStorage.setItem('mb_water', water);
-            updateWater();
-            tg.HapticFeedback.notificationOccurred('success');
-        }
-
-        function updateWater() {
-            document.getElementById('w-count').innerText = (water / 1000).toFixed(1) + "L";
-        }
-
-        function showT(t) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+        function showTab(t) {
+            ['dash', 'add', 'diet'].forEach(tab => {
+                document.getElementById('tab-' + tab).classList.add('hidden');
+                document.getElementById('n-' + tab).classList.remove('tab-active');
+            });
             document.getElementById('tab-' + t).classList.remove('hidden');
-            document.querySelectorAll('nav button, .fixed button').forEach(el => el.classList.remove('tab-active', 'accent'));
-            document.getElementById('nav-' + t).classList.add('tab-active', 'accent');
-            tg.HapticFeedback.impactOccurred('light');
-        }
-        function setUn(u) {
-            uUnit = u;
-            document.getElementById('un-gr').classList.toggle('unit-active', u === 'gr');
-            document.getElementById('un-pc').classList.toggle('unit-active', u === 'pc');
+            document.getElementById('n-' + t).classList.add('tab-active');
         }
 
-        function calcF() {
-            const n = document.getElementById('f-name').value.toLowerCase();
-            const v = parseFloat(document.getElementById('f-val').value);
-            for(let key in foodDB) {
-                if(n.includes(key)) {
-                    let f = foodDB[key];
-                    let w = uUnit === 'pc' ? v * f.dw : v;
-                    let r = w / 100;
-                    document.getElementById('res-k').innerText = Math.round(f.k * r);
-                    document.getElementById('res-p').innerText = Math.round(f.p * r) + "g";
-                    document.getElementById('res-f').innerText = Math.round(f.f * r) + "g";
-                    document.getElementById('res-c').innerText = Math.round(f.c * r) + "g";
-                    document.getElementById('f-res').classList.remove('hidden');
-                    return;
+        function addToLog() {
+            let name = document.getElementById('f-name').value.toLowerCase().trim();
+            let weight = parseFloat(document.getElementById('f-weight').value);
+            
+            if(!name || !weight) return tg.showAlert("Ma'lumotni to'liq kiriting!");
+
+            let foodFound = false;
+            for(let key in db) {
+                if(name.includes(key)) {
+                    let r = weight / 100;
+                    let item = {
+                        id: Date.now(),
+                        name: name,
+                        weight: weight,
+                        k: Math.round(db[key].k * r),
+                        p: Math.round(db[key].p * r),
+                        f: Math.round(db[key].f * r),
+                        c: Math.round(db[key].c * r)
+                    };
+                    logs.push(item);
+                    saveLogs();
+                    foodFound = true;
+                    break;
                 }
             }
-            tg.showAlert("Topilmadi!");
+
+            if(!foodFound) {
+                // Agar bazada yo'q bo'lsa, o'rtacha qiymat bilan qo'shish
+                tg.showConfirm("Bu taom bazada yo'q. O'rtacha 150 kkal bilan qo'shib qo'yaymi?", (ok) => {
+                    if(ok) {
+                        logs.push({ id: Date.now(), name: name, weight: weight, k: weight * 1.5, p: 10, f: 5, c: 20 });
+                        saveLogs();
+                    }
+                });
+            }
+            
+            document.getElementById('f-name').value = "";
+            document.getElementById('f-weight').value = "";
+            showTab('dash');
         }
 
-        function resetData() { localStorage.clear(); location.reload(); }
+        function saveLogs() {
+            localStorage.setItem('mb_logs', JSON.stringify(logs));
+            renderLogs();
+        }
+
+        function renderLogs() {
+            let html = "";
+            let totals = { k: 0, p: 0, f: 0, c: 0 };
+
+            logs.forEach(item => {
+                totals.k += item.k; totals.p += item.p; totals.f += item.f; totals.c += item.c;
+                html += `
+                    <div class="glass p-3 flex justify-between items-center animate-fadeIn">
+                        <div>
+                            <p class="text-xs font-bold uppercase">${item.name} (${item.weight}g)</p>
+                            <p class="text-[9px] text-gray-500">P: ${item.item_p || item.p}g | F: ${item.f}g | C: ${item.c}g</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="accent font-black text-sm">${item.k} kkal</p>
+                            <button onclick="removeItem(${item.id})" class="text-red-500 text-[8px] uppercase font-bold">O'chirish</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('food-logs').innerHTML = html || "<p class='text-center text-gray-600 text-[10px] py-10'>BUGUN HALI HECH NARSA YEMADINGIZ</p>";
+            
+            // Dashboard yangilash
+            document.getElementById('rem-kcal').innerText = target.kkal - totals.k;
+            document.getElementById('curr-p').innerText = totals.p;
+            document.getElementById('curr-f').innerText = totals.f;
+            document.getElementById('curr-c').innerText = totals.c;
+
+            // Barlarni to'ldirish
+            document.getElementById('p-bar').style.width = Math.min((totals.p / target.p) * 100, 100) + "%";
+            document.getElementById('f-bar').style.width = Math.min((totals.f / target.f) * 100, 100) + "%";
+            document.getElementById('c-bar').style.width = Math.min((totals.c / target.c) * 100, 100) + "%";
+        }
+
+        function removeItem(id) {
+            logs = logs.filter(i => i.id !== id);
+            saveLogs();
+            tg.HapticFeedback.impactOccurred('medium');
+        }
+
+        function clearDay() {
+            if(confirm("Barcha yeyilgan taomlarni o'chirasizmi?")) {
+                logs = [];
+                saveLogs();
+            }
+        }
+
+        window.onload = renderLogs;
     </script>
 </body>
 </html>
+                
