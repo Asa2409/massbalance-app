@@ -7,58 +7,49 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #0b0b0b; color: #fff; font-family: 'Inter', sans-serif; }
-        .card { background: #1a1a1a; border: 1px solid #333; border-radius: 20px; }
-        .accent { color: #d4ff00; }
-        .btn-primary { background-color: #d4ff00; color: #000; font-weight: bold; }
-        input { transition: all 0.3s ease; }
-        input:focus { border-color: #d4ff00 ! extinction; box-shadow: 0 0 10px rgba(212, 255, 0, 0.2); }
+        body { background-color: #0b0b0b; color: #fff; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        .card { background: linear-gradient(145deg, #161616, #0f0f0f); border: 1px solid #222; border-radius: 24px; }
+        .accent-text { color: #d4ff00; }
+        .btn-active { background-color: #d4ff00; color: #000; font-weight: 900; box-shadow: 0 10px 20px rgba(212, 255, 0, 0.15); }
     </style>
 </head>
 <body class="p-4">
     <div class="max-w-md mx-auto">
         <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-black italic tracking-tighter">MASS<span class="accent">BALANCE</span> PRO</h1>
-            <div id="user-name" class="text-xs font-medium text-gray-400 uppercase tracking-widest bg-gray-900 px-3 py-1 rounded-full border border-gray-800">ATLET</div>
+            <h1 class="text-2xl font-black italic tracking-tighter">MASS<span class="accent-text">BALANCE</span> PRO</h1>
+            <div id="user-name" class="text-[10px] bg-white/5 border border-white/10 px-3 py-1 rounded-full text-gray-400">ATLET</div>
         </div>
 
-        <div class="card p-6 mb-6 shadow-2xl relative overflow-hidden">
-            <div class="absolute top-0 right-0 w-32 h-32 bg-d4ff00 opacity-5 blur-3xl"></div>
-            <p class="text-gray-500 text-xs font-bold uppercase mb-1">Bugungi jami</p>
-            <div class="text-5xl font-black mb-6 flex items-baseline gap-2">
-                <span id="total-cal">0</span>
-                <span class="text-sm font-bold text-gray-600 uppercase">kcal</span>
-            </div>
+        <div class="card p-6 mb-6">
+            <p class="text-gray-500 text-[10px] font-bold uppercase tracking-widest mb-1">Natija</p>
+            <div class="text-5xl font-black mb-6 italic"><span id="total-cal">0</span> <span class="text-sm font-bold text-gray-700 not-italic">KCAL</span></div>
             
             <div class="grid grid-cols-3 gap-3">
-                <div class="bg-black/40 p-3 rounded-2xl border border-gray-800/50 text-center">
+                <div class="bg-white/5 p-3 rounded-2xl text-center border border-white/5">
                     <div class="text-blue-400 text-lg font-black" id="p-val">0g</div>
-                    <div class="text-[10px] text-gray-500 font-bold uppercase">Oqsil</div>
+                    <div class="text-[9px] text-gray-500 uppercase font-bold">Oqsil</div>
                 </div>
-                <div class="bg-black/40 p-3 rounded-2xl border border-gray-800/50 text-center">
+                <div class="bg-white/5 p-3 rounded-2xl text-center border border-white/5">
                     <div class="text-yellow-400 text-lg font-black" id="f-val">0g</div>
-                    <div class="text-[10px] text-gray-500 font-bold uppercase">Yog'</div>
+                    <div class="text-[9px] text-gray-500 uppercase font-bold">Yog'</div>
                 </div>
-                <div class="bg-black/40 p-3 rounded-2xl border border-gray-800/50 text-center">
+                <div class="bg-white/5 p-3 rounded-2xl text-center border border-white/5">
                     <div class="text-green-400 text-lg font-black" id="c-val">0g</div>
-                    <div class="text-[10px] text-gray-500 font-bold uppercase">Uglevod</div>
+                    <div class="text-[9px] text-gray-500 uppercase font-bold">Uglevod</div>
                 </div>
             </div>
         </div>
 
-        <div class="card p-5 border-t-4 border-t-[#d4ff00]">
-            <h3 class="font-bold text-sm uppercase mb-4 text-gray-400">Ovqat kiritish</h3>
-            <div class="space-y-4">
-                <div>
-                    <label class="text-[10px] font-bold text-gray-500 uppercase ml-1">Mahsulot nomi</label>
-                    <input id="food-name" type="text" placeholder="Masalan: Tuxum, Sir, Tovuq..." class="w-full bg-black border border-gray-800 p-4 rounded-xl text-white outline-none">
-                </div>
-                <div>
-                    <label class="text-[10px] font-bold text-gray-500 uppercase ml-1">Miqdori (grammda)</label>
-                    <input id="food-weight" type="number" placeholder="100" class="w-full bg-black border border-gray-800 p-4 rounded-xl text-white outline-none">
-                </div>
-                <button onclick="addFood()" class="w-full btn-primary p-4 rounded-2xl active:scale-95 transition-all shadow-lg shadow-d4ff00/10 uppercase font-black tracking-widest">HISOB-KITOBLARNI KO'RISH</button>
+        <div class="card p-5 space-y-4 border-t-2 border-t-[#d4ff00]">
+            <div>
+                <label class="text-[10px] text-gray-500 font-bold uppercase ml-1">Mahsulot nomi (masalan: tuxum)</label>
+                <input id="food-name" type="text" placeholder="Nima yedigiz?" class="w-full bg-black/50 border border-white/10 p-4 rounded-xl mt-1 outline-none focus:border-[#d4ff00]">
             </div>
+            <div>
+                <label class="text-[10px] text-gray-500 font-bold uppercase ml-1">Vazni (grammda)</label>
+                <input id="food-weight" type="number" placeholder="100" class="w-full bg-black/50 border border-white/10 p-4 rounded-xl mt-1 outline-none focus:border-[#d4ff00]">
+            </div>
+            <button onclick="calculate()" class="w-full btn-active p-4 rounded-2xl transition-all uppercase tracking-tighter italic">Hisoblash</button>
         </div>
     </div>
 
@@ -66,56 +57,46 @@
         let tg = window.Telegram.WebApp;
         tg.expand();
 
-        if(tg.initDataUnsafe.user) {
-            document.getElementById('user-name').innerText = tg.initDataUnsafe.user.first_name;
-        }
-
-        // Oziq-ovqat bazasi (100g uchun)
-        const foodDatabase = {
-
-АСАД_БЕК, [01.03.2026 15:24]
-"tuxum": { kcal: 155, p: 13, f: 11, c: 1.1 },
-            "sir": { kcal: 350, p: 25, f: 27, c: 1.3 },
-            "tovuq": { kcal: 165, p: 31, f: 3.6, c: 0 },
-            "guruch": { kcal: 130, p: 2.7, f: 0.3, c: 28 },
-            "mol go'shti": { kcal: 250, p: 26, f: 15, c: 0 },
-            "banan": { kcal: 89, p: 1.1, f: 0.3, c: 23 },
-            "tvorog": { kcal: 100, p: 18, f: 5, c: 3 },
-            "osh": { kcal: 210, p: 6, f: 12, c: 20 }
+        const db = {
+            "tuxum": { k: 155, p: 13, f: 11, c: 1.1 },
+            "toxum": { k: 155, p: 13, f: 11, c: 1.1 }, // Imlo xatosi uchun
+            "tovuq": { k: 165, p: 31, f: 3.6, c: 0 },
+            "sir": { k: 350, p: 25, f: 27, c: 1.3 },
+            "osh": { k: 210, p: 6, f: 12, c: 20 },
+            "guruch": { k: 130, p: 2.7, f: 0.3, c: 28 },
+            "non": { k: 260, p: 8, f: 1, c: 50 }
         };
 
-        function addFood() {
-            const inputName = document.getElementById('food-name').value.toLowerCase();
-            const weight = parseFloat(document.getElementById('food-weight').value);
+        function calculate() {
+            let name = document.getElementById('food-name').value.toLowerCase().trim();
+            let weight = parseFloat(document.getElementById('food-weight').value);
 
-            if(!inputName || !weight) {
-                tg.showAlert("Iltimos, mahsulot nomi va vaznini kiriting!");
+            if (!name || isNaN(weight)) {
+                tg.
+
+АСАД_БЕК, [01.03.2026 15:31]
+showAlert("Iltimos, mahsulot va vaznini to'g'ri kiriting!");
                 return;
             }
 
-            // Bazadan qidirish
             let found = false;
-            for (let key in foodDatabase) {
-                if (inputName.includes(key)) {
-                    let food = foodDatabase[key];
-                    let ratio = weight / 100;
-
-                    document.getElementById('total-cal').innerText = Math.round(food.kcal * ratio);
-                    document.getElementById('p-val').innerText = Math.round(food.p * ratio) + 'g';
-                    document.getElementById('f-val').innerText = Math.round(food.f * ratio) + 'g';
-                    document.getElementById('c-val').innerText = Math.round(food.c * ratio) + 'g';
-                    
+            for (let key in db) {
+                if (name.includes(key)) {
+                    let r = weight / 100;
+                    document.getElementById('total-cal').innerText = Math.round(db[key].k * r);
+                    document.getElementById('p-val').innerText = Math.round(db[key].p * r) + 'g';
+                    document.getElementById('f-val').innerText = Math.round(db[key].f * r) + 'g';
+                    document.getElementById('c-val').innerText = Math.round(db[key].c * r) + 'g';
                     found = true;
-                    tg.HapticFeedback.impactOccurred('medium');
+                    tg.HapticFeedback.notificationOccurred('success');
                     break;
                 }
             }
 
             if (!found) {
-                tg.showAlert("Kechirasiz, bu mahsulot bazada topilmadi. Hozircha: tuxum, sir, tovuq, guruch, osh kabi so'zlarni sinab ko'ring.");
+                tg.showAlert("Bazada '" + name + "' topilmadi. Hozircha: tuxum, tovuq, osh, sir, non.");
             }
         }
     </script>
 </body>
 </html>
-
