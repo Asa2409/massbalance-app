@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MassBalance Pro</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #000; color: #fff; font-family: 'Inter', sans-serif; }
+        .card { background: #111; border: 1px solid #333; border-radius: 15px; }
+        .accent { color: #ccff00; } /* GYMMODE Style Green */
+        .btn-primary { background-color: #ccff00; color: #000; font-weight: bold; }
+    </style>
+</head>
+<body class="p-4">
+    <div class="max-w-md mx-auto">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold italic">MASS<span class="accent">BALANCE</span> PRO</h1>
+            <div id="user-name" class="text-sm text-gray-400">Salom, Atlet!</div>
+        </div>
+
+        <div class="card p-6 mb-6 shadow-lg">
+            <p class="text-gray-400 text-sm mb-1">Bugungi Kaloriya</p>
+            <div class="text-4xl font-black mb-4"><span id="total-cal">0</span> <span class="text-lg font-normal text-gray-500">kcal</span></div>
+            
+            <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                <div class="p-2 border border-gray-800 rounded-lg">
+                    <div class="text-blue-400 font-bold" id="p-val">0g</div>
+                    <div class="text-gray-500">Oqsil</div>
+                </div>
+                <div class="p-2 border border-gray-800 rounded-lg">
+                    <div class="text-yellow-400 font-bold" id="f-val">0g</div>
+                    <div class="text-gray-500">Yog'</div>
+                </div>
+                <div class="p-2 border border-gray-800 rounded-lg">
+                    <div class="text-green-400 font-bold" id="c-val">0g</div>
+                    <div class="text-gray-500">Uglevod</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card p-4">
+            <h3 class="font-bold mb-3">Ovqatni kiritish</h3>
+            <input id="food-name" type="text" placeholder="Ovqat nomi (masalan: Tovuq filosi)" class="w-full bg-black border border-gray-700 p-3 rounded-lg mb-2 outline-none">
+            <input id="food-weight" type="number" placeholder="Gramm (masalan: 200)" class="w-full bg-black border border-gray-700 p-3 rounded-lg mb-4 outline-none">
+            <button onclick="addFood()" class="w-full btn-primary p-4 rounded-xl active:scale-95 transition-all">HISOB-KITOBLARNI KO'RISH</button>
+        </div>
+    </div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand(); // Ilovani to'liq ekranga yoyish
+
+        if(tg.initDataUnsafe.user) {
+            document.getElementById('user-name').innerText = tg.initDataUnsafe.user.first_name;
+        }
+
+        function addFood() {
+            const name = document.getElementById('food-name').value;
+            const weight = document.getElementById('food-weight').value;
+
+            if(!name || !weight) {
+                tg.showAlert("Ma'lumotlarni to'liq kiriting!");
+                return;
+            }
+
+            // Hozircha namunaviy hisob (Keyinchalik bazadan oladi)
+            // Tovuq filosi misolida: 100g = 165 kcal, 31g P, 3g F, 0g C
+            let cal = Math.round((1.65 * weight));
+            let p = Math.round((0.31 * weight));
+            let f = Math.round((0.03 * weight));
+
+            document.getElementById('total-cal').innerText = cal;
+            document.getElementById('p-val').innerText = p + 'g';
+            document.getElementById('f-val').innerText = f + 'g';
+            
+            tg.HapticFeedback.impactOccurred('medium'); // Vibratsiya berish
+        }
+    </script>
+</body>
+</html>
