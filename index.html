@@ -3,123 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MassBalance Pro</title>
+    <title>MassBalance Pro Ultimate</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background-color: #0b0b0b; color: #fff; font-family: 'Inter', sans-serif; }
-        .card { background: #161616; border: 1px solid #222; border-radius: 20px; }
+        body { background-color: #080808; color: #fff; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .glass { background: rgba(22, 22, 22, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); border-radius: 24px; }
         .accent { color: #d4ff00; }
-        .btn-main { background: #d4ff00; color: #000; font-weight: 900; }
-        .input-style { background: #000; border: 1px solid #333; padding: 12px; border-radius: 12px; width: 100%; outline: none; }
-        .tab-active { color: #d4ff00; border-bottom: 2px solid #d4ff00; }
-        .unit-btn { background: #222; padding: 8px; border-radius: 10px; flex: 1; text-align: center; font-size: 10px; cursor: pointer; border: 1px solid transparent; }
-        .unit-active { border-color: #d4ff00; color: #d4ff00; }
+        .bg-accent { background-color: #d4ff00; color: #000; }
+        .tab-active { color: #d4ff00; position: relative; }
+        .tab-active::after { content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; background: #d4ff00; border-radius: 50%; }
+        input, select { background: #121212; border: 1px solid #222; padding: 14px; border-radius: 16px; width: 100%; outline: none; color: #fff; }
+        input:focus { border-color: #d4ff00; }
+        .unit-btn { background: #1a1a1a; padding: 10px; border-radius: 12px; flex: 1; text-align: center; font-size: 11px; font-weight: 800; cursor: pointer; border: 1px solid transparent; transition: 0.3s; }
+        .unit-active { border-color: #d4ff00; color: #d4ff00; background: rgba(212, 255, 0, 0.05); }
     </style>
 </head>
-<body class="p-4 pb-24">
+<body class="p-4 pb-28">
 
-    <div id="onboarding" class="max-w-md mx-auto hidden">
-        <h2 class="text-3xl font-black italic accent mb-6 tracking-tighter">PROFIL YARATISH</h2>
-        <div class="card p-6 space-y-4">
+    <div id="setup" class="max-w-md mx-auto hidden pt-10">
+        <h1 class="text-4xl font-black italic accent mb-2 tracking-tighter">MASS<span class="text-white">BALANCE</span></h1>
+        <p class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-10">Shaxsiy AI Treneringiz</p>
+        <div class="glass p-6 space-y-5">
             <input id="reg-name" type="text" placeholder="Ismingiz">
-            <div class="flex gap-2">
+            <div class="flex gap-3">
                 <input id="reg-weight" type="number" placeholder="Vazn (kg)">
                 <input id="reg-height" type="number" placeholder="Bo'y (sm)">
             </div>
-            <select id="reg-goal" class="input-style text-white">
+            <select id="reg-goal">
                 <option value="lose">Ozish (Sushka)</option>
                 <option value="gain">Semirish (Massa)</option>
             </select>
-            <button onclick="saveProfile()" class="w-full btn-main p-4 rounded-xl mt-4 uppercase italic">Boshlash</button>
+            <button onclick="saveProfile()" class="w-full bg-accent p-5 rounded-2xl font-black italic uppercase tracking-widest">Profil yaratish</button>
         </div>
     </div>
 
     <div id="main-app" class="max-w-md mx-auto hidden">
-        <div class="card p-5 mb-6 border-l-4 border-[#d4ff00]">
-            <div class="flex justify-between items-start mb-4">
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h2 id="u-name-display" class="text-xl font-black accent italic uppercase tracking-tighter">ATLET</h2>
+                <p id="u-status" class="text-[9px] text-gray-500 font-black tracking-widest uppercase"></p>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="resetData()" class="text-gray-700 text-xs"><i class="fa-solid fa-rotate-left"></i></button>
+            </div>
+        </div>
+
+        <div id="tab-dash" class="tab-content space-y-4">
+            <div class="grid grid-cols-2 gap-3">
+                <div class="glass p-5">
+                    <p class="text-[9px] text-gray-500 font-bold uppercase mb-1">Kunlik Norma</p>
+                    <p class="text-2xl font-black accent italic" id="d-kcal">0</p>
+                    <p class="text-[8px] text-gray-600 font-bold">kcal / kun</p>
+                </div>
+                <div class="glass p-5">
+                    <p class="text-[9px] text-gray-500 font-bold uppercase mb-1">Suv Balansi</p>
+                    <div class="flex items-center gap-2">
+                        <p class="text-2xl font-black text-blue-400 italic" id="w-count">0</p>
+                        <button onclick="addWater()" class="text-blue-500 text-sm active:scale-90"><i class="fa-solid fa-circle-plus"></i></button>
+                    </div>
+                    <p class="text-[8px] text-gray-600 font-bold">2.0L Maqsad</p>
+                </div>
+            </div>
+
+            <div class="glass p-6 flex justify-between items-center">
                 <div>
-                    <h1 id="user-display-name" class="text-xl font-black accent tracking-tight">ATLET</h1>
-                    <p id="goal-display" class="text-[9px] text-gray-500 font-bold uppercase tracking-widest"></p>
+                    <p class="text-[10px] text-gray-500 font-black uppercase mb-2 tracking-widest">Jismoniy holat</p>
+                    <div class="flex gap-4">
+                        <span class="text-sm font-bold"><span class="text-gray-600">Bo'y:</span> <span id="d-h">0</span>sm</span>
+                        <span class="text-sm font-bold"><span class="text-gray-600">Vazn:</span> <span id="d-w">0</span>kg</span>
+                    </div>
                 </div>
-                <button onclick="resetData()" class="text-[10px] text-red-500 font-bold">RESET</button>
-            </div>
-            <div class="grid grid-cols-3 gap-4 text-center">
-                <div><p class="text-[10px] text-gray-500 uppercase">Bo'y</p><p id="d-height" class="font-bold">0 sm</p></div>
-                <div><p class="text-[10px] text-gray-500 uppercase">Vazn</p><p id="d-weight" class="font-bold">0 kg</p></div>
-                <div><p class="text-[10px] text-gray-500 uppercase">Kkal</p><p id="target-kcal" class="accent font-black">0</p></div>
-            </div>
-        </div>
-
-        <div class="flex border-b border-gray-900 mb-6">
-            <div id="t-plan" onclick="showTab('plan')" class="flex-1 py-3 text-center text-xs font-bold cursor-pointer">RATSION</div>
-            <div id="t-calc" onclick="showTab('calc')" class="flex-1 py-3 text-center text-xs font-bold cursor-pointer">KALKULYATOR</div>
-        </div>
-
-        <div id="tab-plan" class="hidden space-y-4">
-            <h3 class="text-sm font-black accent italic uppercase mb-2">7 Kunlik Reja:</h3>
-            <div id="weekly-plan" class="space-y-3">
+                <div class="h-10 w-10 bg-accent/10 rounded-full flex items-center justify-center">
+                    <i class="fa-solid fa-weight-scale accent"></i>
                 </div>
+            </div>
+
+            <div class="glass p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xs font-black uppercase italic tracking-widest">Bugungi Mashg'ulot</h3>
+                    <span class="text-[10px] bg-white/5 px-2 py-1 rounded text-gray-400" id="current-day">Dushanba</span>
+                </div>
+                <div id="workout-desc" class="text-sm text-gray-300 font-medium"></div>
+            </div>
         </div>
 
-        <div id="tab-calc" class="hidden space-y-4">
-            <div class="card p-5 space-y-4">
-                <input id="food-name" type="text" placeholder="Mahsulot nomi (osh, tuxum...)" class="input-style">
+        <div id="tab-diet" class="tab-content hidden space-y-3">
+            <h3 class="text-xs font-black uppercase italic accent mb-4">7 Kunlik Ratsion</h3>
+            <div id="diet-list" class="space-y-3"></div>
+        </div>
+
+        <div id="tab-calc" class="tab-content hidden space-y-4">
+            <div class="glass p-5 space-y-4">
+                <input id="f-name" type="text" placeholder="Mahsulot nomi...">
                 <div class="flex gap-2">
-                    <div id="u-gr" onclick="setUnit('gr')" class="unit-btn unit-active">GRAMM</div>
-                    <div id="u-pc" onclick="setUnit('pc')" class="unit-btn">DONA/PORT</div>
+                    <div id="un-gr" onclick="setUn('gr')" class="unit-btn unit-active">GRAMM</div>
+                    <div id="un-pc" onclick="setUn('pc')" class="unit-btn">DONA / PORT</div>
                 </div>
-                <input id="food-amount" type="number" placeholder="Miqdori" class="input-style">
-                <button onclick="calculateFood()" class="w-full btn-main p-4 rounded-xl uppercase italic">Hisoblash</button>
+                <input id="f-val" type="number" placeholder="Miqdori">
+                <button onclick="calcF()" class="w-full bg-accent p-4 rounded-xl font-black italic uppercase">Hisoblash</button>
             </div>
-
-            <div id="calc-res" class="card p-6 hidden border border-[#d4ff00]">
-                <div class="text-3xl font-black mb-4"><span id="res-kcal">0</span> <span class="text-xs text-gray-500">KCAL</span></div>
+            <div id="f-res" class="glass p-6 hidden border-t-2 border-accent">
+                <div class="text-4xl font-black mb-4 italic" id="res-k">0</div>
                 <div class="grid grid-cols-3 gap-2">
-                    <div class="bg-black p-2 rounded-lg text-center"><p class="text-blue-400 font-bold" id="res-p">0g</p><p class="text-[8px] text-gray-600">OQSIL</p></div>
-                    <div class="bg-black p-2 rounded-lg text-center"><p class="text-yellow-400 font-bold" id="res-f">0g</p><p class="text-[8px] text-gray-600">YOG'</p></div>
-                    <div class="bg-black p-2 rounded-lg text-center"><p class="text-green-400 font-bold" id="res-c">0g</p><p class="text-[8px] text-gray-600">UGLEVOD</p></div>
+                    <div class="text-center"><p class="text-blue-400 font-bold" id="res-p">0g</p><p class="text-[8px] text-gray-600 font-black">OQSIL</p></div>
+                    <div class="text-center"><p class="text-yellow-400 font-bold" id="res-f">0g</p><p class="text-[8px] text-gray-600 font-black">YOG'</p></div>
+                    <div class="text-center"><p class="text-green-400 font-bold" id="res-c">0g</p><p class="text-[8px] text-gray-600 font-black">UGLEVOD</p></div>
                 </div>
             </div>
+        </div>
+
+        <div class="fixed bottom-6 left-4 right-4 glass p-4 flex justify-around items-center border border-white/10 shadow-2xl">
+            <button onclick="showT('dash')" id="nav-dash" class="tab-active text-xl"><i class="fa-solid fa-house-chimney"></i></button>
+            <button onclick="showT('diet')" id="nav-diet" class="text-xl text-gray-600"><i class="fa-solid fa-utensils"></i></button>
+            <button onclick="showT('calc')" id="nav-calc" class="text-xl text-gray-600"><i class="fa-solid fa-calculator"></i></button>
         </div>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
-        let currentUnit = 'gr';
-        
-        const db = {
-            "tuxum": { k: 155, p: 13, f: 11, c: 1.1, dw: 55 },
-            "osh": { k: 210, p: 6, f: 12, c: 20, dw: 350 },
-            "tovuq": { k: 165, p: 31, f: 3.6, c: 0, dw: 150 },
-            "non": { k: 260, p: 8, f: 1, c: 50, dw: 30 }
-        };
+        let uUnit = 'gr';
+        let water = 0;
 
-        const weeklyDiets = {
-            lose: [
-                {day: "Dushanba", menu: "N: 2ta tuxum. T: 150g tovuq. K: Tvorog."},
-                {day: "Seshanba", menu: "N: Suli bo'tqasi. T: Baliq + Salat. K: Qatiq."},
-                {day: "Chorshanba", menu: "N: Mevalar. T: Sho'rva. K: Qaynatilgan go'sht."},
-                {day: "Payshanba", menu: "N: Omlet. T: Tovuq file. K: Sabzavotlar."},
-                {day: "Juma", menu: "N: Tvorog. T: Grechka + Go'sht. K: Bodringli salat."},
-                {day: "Shanba", menu: "N: 1ta tuxum. T: Dimlama. K: Meva."},
-                {day: "Yakshanba", menu: "N: Choy + Pishloq. T: Sho'rva. K: Yengil salat."}
-            ],
-            gain: [
-                {day: "Dushanba", menu: "N: 3ta tuxum + Non. T: 1 portsiy osh. K: Go'sht + Guruch."},
-                {day: "Seshanba", menu: "N: Suli + Asal. T: Pasta + Tovuq. K: 2ta banan + Tvorog."},
-                {day: "Chorshanba", menu: "N: Somsa 2ta. T: Qozon kabob. K: Sut + Non."},
-                {day: "Payshanba", menu: "N: Qovurilgan tuxum. T: Burger + Fri. K: Go'shtli ovqat."},
-                {day: "Juma", menu: "N: Pishloqli sendvich. T: Manti. K: Palov."},
-                {day: "Shanba", menu: "N: Bo'tqa + Yong'oq. T: Shashlik. K: Sutli mahsulotlar."},
-                {day: "Yakshanba", menu: "N: 2ta somsa. T: Lag'mon. K: Tuxum + Guruch."}
-            ]
+        const foodDB = {
+            "tuxum": { k: 155, p: 13, f: 11, c: 1, dw: 55 },
+            "osh": { k: 210, p: 6, f: 12, c: 20, dw: 350 },
+            "tovuq": { k: 165, p: 31, f: 3, c: 0, dw: 150 },
+            "non": { k: 260, p: 8, f: 1, c: 50, dw: 30 },
+            "somsa": { k: 280, p: 10, f: 15, c: 25, dw: 120 },
+            "banan": { k: 89, p: 1, f: 0, c: 23, dw: 120 }
+        };
+        const plans = {
+            lose: {
+                workout: ["Ko'krak + Qo'l", "Kardio (Yugurish)", "Orqa + Elka", "Oyoq + Press", "Kardio", "Yengil yurish", "Dam olish"],
+                diet: ["N: Tuxum. T: Tovuq file. K: Tvorog.", "N: Suli. T: Baliq. K: Qatiq.", "N: Meva. T: Sho'rva. K: Go'sht.", "N: Omlet. T: Grechka. K: Salat.", "N: Tvorog. T: Tovuq. K: Meva.", "N: Tuxum. T: Dimlama. K: Qatiq.", "N: Choy. T: Sho'rva. K: Salat."]
+            },
+            gain: {
+                workout: ["Og'ir Ko'krak + Triceps", "Oyoq (Baza)", "Dam olish", "Orqa + Biceps", "Elka + Press", "Og'ir Oyoq", "Dam olish"],
+                diet: ["N: 3ta tuxum. T: Osh. K: Go'sht + Guruch.", "N: Suli + Asal. T: Pasta. K: Banan + Sut.", "N: Somsa. T: Qozon kabob. K: Non + Sut.", "N: Tuxum. T: Burger. K: Go'shtli ovqat.", "N: Pishloq. T: Manti. K: Palov.", "N: Bo'tqa. T: Shashlik. K: Tvorog.", "N: Somsa. T: Lag'mon. K: Tuxum."]
+            }
         };
 
         window.onload = function() {
-            const data = localStorage.getItem('mb_v4_data');
-            if(data) showApp(JSON.parse(data));
-            else document.getElementById('onboarding').classList.remove('hidden');
+            const data = localStorage.getItem('mb_v5_pro');
+            if(data) loadApp(JSON.parse(data));
+            else document.getElementById('setup').classList.remove('hidden');
         };
 
         function saveProfile() {
@@ -127,68 +156,77 @@
             const w = document.getElementById('reg-weight').value;
             const h = document.getElementById('reg-height').value;
             const g = document.getElementById('reg-goal').value;
-            if(!n  !w  !h) return;
-
-            const user = { name: n, weight: w, height: h, goal: g, kcal: g === 'lose' ? w * 24 : w * 35 };
-            localStorage.setItem('mb_v4_data', JSON.stringify(user));
-            showApp(user);
+            if(!n || !w) return;
+            const user = { name: n, weight: w, height: h, goal: g, kcal: g === 'lose' ? w * 25 : w * 38 };
+            localStorage.setItem('mb_v5_pro', JSON.stringify(user));
+            loadApp(user);
         }
 
-        function showApp(user) {
-            document.getElementById('onboarding').classList.add('hidden');
+        function loadApp(user) {
+            document.getElementById('setup').classList.add('hidden');
             document.getElementById('main-app').classList.remove('hidden');
-            document.getElementById('user-display-name').innerText = user.name.toUpperCase();
-            document.getElementById('d-height').innerText = user.height + " sm";
-            document.getElementById('d-weight').innerText = user.weight + " kg";
-            document.getElementById('target-kcal').innerText = Math.round(user.kcal);
-            document.getElementById('goal-display').innerText = user.goal === 'lose' ? "SUSHKA REJIMI" : "MASSA REJIMI";
+            document.getElementById('u-name-display').innerText = user.name;
+            document.getElementById('u-status').innerText = user.goal === 'lose' ? "Sushka • Hard Mode" : "Massa • Beast Mode";
+            document.getElementById('d-kcal').innerText = Math.round(user.kcal);
+            document.getElementById('d-h').innerText = user.height;
+            document.getElementById('d-w').innerText = user.weight;
             
-            // Haftalik plan chiqarish
-            const plan = weeklyDiets[user.goal];
-            document.getElementById('weekly-plan').innerHTML = plan.map(d => `
-                <div class="card p-4">
-                    <p class="accent text-[10px] font-black uppercase">${d.day}</p>
-                    <p class="text-xs text-gray-300 mt-1">${d.menu}</p>
+            const days = ["Yakshanba", "Dushanba", "Seshanba", "Chorshanba", "Payshanba", "Juma", "Shanba"];
+            const todayIdx = new Date().getDay();
+            document.getElementById('current-day').innerText = days[todayIdx];
+            document.getElementById('workout-desc').innerText = plans[user.goal].workout[todayIdx === 0 ? 6 : todayIdx-1];
+
+            document.getElementById('diet-list').innerHTML = days.map((d, i) => `
+                <div class="glass p-4 border-l-2 ${i === todayIdx ? 'border-accent' : 'border-transparent'}">
+                    <p class="text-[9px] font-black accent uppercase">${d}</p>
+                    <p class="text-xs text-gray-400 mt-1">${plans[user.goal].diet[i === 0 ? 6 : i-1]}</p>
                 </div>
             `).join('');
-            showTab('plan');
+            water = parseInt(localStorage.getItem('mb_water') || 0);
+            updateWater();
         }
 
-        function showTab(t) {
-            ['plan', 'calc'].forEach(tab => {
-                document.getElementById('tab-' + tab).classList.add('hidden');
-                document.getElementById('t-' + tab).classList.remove('tab-active');
-            });
+        function addWater() {
+            water += 250;
+            localStorage.setItem('mb_water', water);
+            updateWater();
+            tg.HapticFeedback.notificationOccurred('success');
+        }
+
+        function updateWater() {
+            document.getElementById('w-count').innerText = (water / 1000).toFixed(1) + "L";
+        }
+
+        function showT(t) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.getElementById('tab-' + t).classList.remove('hidden');
-            document.getElementById('t-' + t).classList.add('tab-active');
+            document.querySelectorAll('nav button, .fixed button').forEach(el => el.classList.remove('tab-active', 'accent'));
+            document.getElementById('nav-' + t).classList.add('tab-active', 'accent');
+            tg.HapticFeedback.impactOccurred('light');
+        }
+        function setUn(u) {
+            uUnit = u;
+            document.getElementById('un-gr').classList.toggle('unit-active', u === 'gr');
+            document.getElementById('un-pc').classList.toggle('unit-active', u === 'pc');
         }
 
-        function setUnit(u) {
-            currentUnit = u;
-            document.getElementById('u-gr').classList.toggle('unit-active', u === 'gr');
-            document.getElementById('u-pc').classList.toggle('unit-active', u === 'pc');
-        }
-
-        function calculateFood() {
-            const name = document.getElementById('food-name').value.toLowerCase();
-            const amount = parseFloat(document.getElementById('food-amount').value);
-            if(!name || !amount) return;
-
-            for(let key in db) {
-                if(name.includes(key)) {
-                    let food = db[key];
-                    let weight = currentUnit === 'pc' ? amount * food.dw : amount;
-                    let r = weight / 100;
-
-                    document.getElementById('res-kcal').innerText = Math.round(food.k * r);
-                    document.getElementById('res-p').innerText = Math.round(food.p * r) + "g";
-                    document.getElementById('res-f').innerText = Math.round(food.f * r) + "g";
-                    document.getElementById('res-c').innerText = Math.round(food.c * r) + "g";
-                    document.getElementById('calc-res').classList.remove('hidden');
+        function calcF() {
+            const n = document.getElementById('f-name').value.toLowerCase();
+            const v = parseFloat(document.getElementById('f-val').value);
+            for(let key in foodDB) {
+                if(n.includes(key)) {
+                    let f = foodDB[key];
+                    let w = uUnit === 'pc' ? v * f.dw : v;
+                    let r = w / 100;
+                    document.getElementById('res-k').innerText = Math.round(f.k * r);
+                    document.getElementById('res-p').innerText = Math.round(f.p * r) + "g";
+                    document.getElementById('res-f').innerText = Math.round(f.f * r) + "g";
+                    document.getElementById('res-c').innerText = Math.round(f.c * r) + "g";
+                    document.getElementById('f-res').classList.remove('hidden');
                     return;
                 }
             }
-            tg.showAlert("Mahsulot topilmadi!");
+            tg.showAlert("Topilmadi!");
         }
 
         function resetData() { localStorage.clear(); location.reload(); }
